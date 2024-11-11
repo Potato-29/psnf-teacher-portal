@@ -1,5 +1,5 @@
-import { Dashboard } from "@/screens/dashboard/index";
+import { LoginScreen } from "@/screens/login/login-screen";
 
 export default function Home() {
-  return <Dashboard />;
+  return <LoginScreen />;
 }
