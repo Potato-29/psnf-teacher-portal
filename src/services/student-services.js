@@ -6,6 +6,7 @@ export const getAllStudents = async () => {
     return data;
   }
   if (error) {
+    console.log(error);
     throw new Error(error);
   }
 };
@@ -19,6 +20,7 @@ export const getStudentsByClass = async (classId) => {
     return data;
   }
   if (error) {
+    console.log(error);
     throw new Error(error);
   }
 };

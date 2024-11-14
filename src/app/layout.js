@@ -1,17 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Sidebar from "@/components/Sidebar/index";
 
 const geistSans = localFont({
@@ -34,14 +23,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased m-0 p-0`}
       >
         <Toaster />
         <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
           <Sidebar />
 
-          {/* Main Content */}
-          <main className="flex-1 overflow-y-auto p-8">{children}</main>
+          <main className="flex-1 p-8 overflow-y-auto">{children}</main>
         </div>
       </body>
     </html>

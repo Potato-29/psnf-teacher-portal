@@ -37,7 +37,7 @@ export const useAuth = () => {
         console.log(err);
         setError(err.message);
         // Clear invalid token
-        Cookies.remove("token");
+        // Cookies.remove("token");
       } finally {
         setLoading(false);
       }

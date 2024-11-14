@@ -15,8 +15,23 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
+
+  // Hide sidebar on login page
+  if (pathname === "/login") {
+    return null;
+  }
+
+  const routes = [
+    { name: "Dashboard", path: "/", icon: LayoutDashboard },
+    { name: "Attendance", path: "/attendance", icon: Users },
+    { name: "Report Card", path: "/report-card", icon: FileText },
+    { name: "Courses", path: "/courses", icon: BookOpen },
+  ];
+
   return (
-    <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+    <aside
+      className={`w-64 px-4 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700`}
+    >
       <div className="p-2">
         <Card>
           <CardContent className="flex flex-col p-2">
@@ -28,38 +43,17 @@ export default function Sidebar() {
         </Card>
       </div>
       <nav className="mt-4">
-        <Button
-          variant={pathname === "/dashboard" ? "secondary" : "ghost"}
-          className="w-full justify-start"
-          onClick={() => router.push("dashboard")}
-        >
-          <LayoutDashboard className="mr-2 h-4 w-4" />
-          Dashboard
-        </Button>
-        <Button
-          variant={pathname === "/attendance" ? "secondary" : "ghost"}
-          className="w-full justify-start"
-          onClick={() => router.push("/attendance")}
-        >
-          <Users className="mr-2 h-4 w-4" />
-          Attendance
-        </Button>
-        <Button
-          variant={pathname === "/reports" ? "secondary" : "ghost"}
-          className="w-full justify-start"
-          onClick={() => router.push("reports")}
-        >
-          <FileText className="mr-2 h-4 w-4" />
-          Report Cards
-        </Button>
-        <Button
-          variant={pathname === "/courses" ? "secondary" : "ghost"}
-          className="w-full justify-start"
-          onClick={() => router.push("courses")}
-        >
-          <BookOpen className="mr-2 h-4 w-4" />
-          Courses
-        </Button>
+        {routes.map((route, index) => (
+          <Button
+            key={index}
+            variant={pathname === route.path ? "secondary" : "ghost"}
+            className="w-full justify-start"
+            onClick={() => router.push(route.path)}
+          >
+            <route.icon className="mr-2 h-4 w-4" />
+            {route.name}
+          </Button>
+        ))}
       </nav>
       <div className="absolute bottom-4 left-4">
         <Button

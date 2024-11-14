@@ -6,7 +6,8 @@ export const getAttendanceRecordByClass = async (classId) => {
     .select("*")
     .eq("class_id", classId);
   if (error) {
-    throw new Error(error);
+    console.log(error);
+    throw new Error(JSON.stringify(error));
   }
   return data;
 };

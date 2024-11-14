@@ -16,16 +16,16 @@ import { Input } from "@/components/ui/input";
 import supabase from "@/config/supabase-client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { getStudentsByClass } from "@/services/student-services";
 import { getAttendanceRecordByClass } from "@/services/attendance-services";
+import { getStudentsByClass } from "@/services/student-services";
 
 export function AttendanceTrackerComponent() {
   const { user } = useAuth();
-  const [students, setStudents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [attendance, setAttendance] = useState({});
+  const [students, setStudents] = useState([]);
   const [tempAttendance, setTempAttendance] = useState({});
 
   const filteredStudents = students.filter((student) =>
@@ -116,6 +116,24 @@ export function AttendanceTrackerComponent() {
   const handleSave = () => {
     if (selectedDate) {
       const dateKey = format(selectedDate, "yyyy-MM-dd");
+
+      // Check if all students are marked
+      const allMarked = students.every(
+        (student) =>
+          tempAttendance[student.id] === "present" ||
+          tempAttendance[student.id] === "absent"
+      );
+
+      if (!allMarked) {
+        toast({
+          variant: "destructive",
+          title: "Incomplete",
+          description: "Please mark all students before saving.",
+          status: "warning",
+        });
+        return; // Exit if not all students are marked
+      }
+
       const existingAttendance = attendance[dateKey];
       setAttendance((prev) => ({
         ...prev,
@@ -151,7 +169,7 @@ export function AttendanceTrackerComponent() {
   }, [isDialogOpen]);
 
   const getAttendanceRecord = async () => {
-    const result = await getAttendanceRecordByClass();
+    const result = await getAttendanceRecordByClass(user.class);
     if (result) {
       const newAttendance = result.reduce((acc, record) => {
         const dateKey = record.date;
