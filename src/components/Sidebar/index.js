@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import {
   BookOpen,
+  CopyCheck,
   FileText,
   LayoutDashboard,
   LogOut,
@@ -23,7 +24,8 @@ export default function Sidebar() {
 
   const routes = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
-    { name: "Attendance", path: "/attendance", icon: Users },
+    { name: "Class", path: "/class", icon: Users },
+    { name: "Attendance", path: "/attendance", icon: CopyCheck },
     { name: "Report Card", path: "/report-card", icon: FileText },
     { name: "Courses", path: "/courses", icon: BookOpen },
   ];
@@ -47,7 +49,7 @@ export default function Sidebar() {
           <Button
             key={index}
             variant={pathname === route.path ? "secondary" : "ghost"}
-            className="w-full justify-start"
+            className="w-full justify-start my-1"
             onClick={() => router.push(route.path)}
           >
             <route.icon className="mr-2 h-4 w-4" />
