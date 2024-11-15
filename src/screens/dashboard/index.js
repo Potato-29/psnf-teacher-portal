@@ -270,7 +270,7 @@ export function Dashboard({ students }) {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center">
-              <Bell className="mr-2 h-5 w-5 text-yellow-500" />
+              <Users className="mr-2 h-5 w-5 text-yellow-500" />
               Your Class
             </CardTitle>
             <CardDescription>Your students</CardDescription>
@@ -298,7 +298,7 @@ export function Dashboard({ students }) {
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center">
               <Clock className="mr-2 h-5 w-5 text-blue-500" />
-              Today's Schedule
+              Today&apos;s Schedule
             </CardTitle>
           </CardHeader>
           <CardContent>
