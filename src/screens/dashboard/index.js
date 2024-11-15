@@ -1,7 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -26,11 +33,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { getAttendanceRecordByClass } from "@/services/attendance-services";
-import { getStudentsByClass } from "@/services/student-services";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
 import supabase from "@/config/supabase-client";
 import useStore from "@/store/useStore";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Dashboard({ students }) {
   const { user } = useAuth();
@@ -72,20 +79,6 @@ export function Dashboard({ students }) {
       setAttendance(newAttendance);
     }
   };
-
-  // const getAllStudentsByClass = async () => {
-  //   const result = await getStudentsByClass(user.class);
-  //   if (result) {
-  //     let studentsArr = [];
-  //     result.map((item) => {
-  //       studentsArr.push({
-  //         name: item.first_name + item.last_name,
-  //         ...item,
-  //       });
-  //     });
-  //     setStudents(studentsArr);
-  //   }
-  // };
 
   const handleSaveAttendance = () => {
     if (selectedDate) {
@@ -278,18 +271,28 @@ export function Dashboard({ students }) {
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center">
               <Bell className="mr-2 h-5 w-5 text-yellow-500" />
-              Recent Notifications
+              Your Class
             </CardTitle>
+            <CardDescription>Your students</CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
-              <li className="text-sm">New student enrollment: Sarah Johnson</li>
-              <li className="text-sm">Upcoming staff meeting on Nov 18</li>
-              <li className="text-sm">
-                Report cards due for submission by Nov 30
-              </li>
-            </ul>
+            <div className="flex flex-wrap gap-2">
+              {students?.map((student) => (
+                <Avatar key={student.id}>
+                  <AvatarImage
+                    src={`/placeholder.svg?height=32&width=32`}
+                    alt={student.name}
+                  />
+                  <AvatarFallback>{`${student.first_name[0]}${student.last_name[0]}`}</AvatarFallback>
+                </Avatar>
+              ))}
+            </div>
           </CardContent>
+          <CardFooter>
+            <Button variant="outline" className="w-full">
+              View All Students
+            </Button>
+          </CardFooter>
         </Card>
         <Card>
           <CardHeader>

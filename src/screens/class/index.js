@@ -34,24 +34,86 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
-import { getStudentsByClass } from "@/services/student-services";
+import {
+  addNewStudent,
+  deleteStudent,
+  getStudentsByClass,
+} from "@/services/student-services";
 import { toast } from "@/hooks/use-toast";
+import { useForm } from "react-hook-form";
 
 export default function Classroom() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      age: "",
+    },
+  });
   const { user } = useAuth();
   const [students, setStudents] = useState([]);
-  const [newStudent, setNewStudent] = useState({ name: "", grade: "" });
-  const addStudent = (e) => {
-    e.preventDefault();
-    setStudents([
-      ...students,
-      { ...newStudent, id: students.length + 1, attendance: "N/A" },
-    ]);
-    setNewStudent({ name: "", grade: "" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const addStudent = async (body) => {
+    try {
+      let payload = {
+        ...body,
+        class: user.class,
+        class_name: user.className.toUpperCase(),
+        created_at: new Date(),
+      };
+      const result = await addNewStudent(payload);
+      if (result) {
+        setStudents([...students, result[0]]);
+        reset();
+        setIsModalOpen(false);
+        toast({
+          duration: 700,
+          variant: "success",
+          title: "Success",
+          description: "Student added successfully",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        duration: 700,
+        variant: "destructive",
+        title: "Failed to add student",
+        description: "Please try again later",
+      });
+    }
+  };
+
+  const removeStudent = async (id) => {
+    try {
+      const result = await deleteStudent(id);
+      if (result) {
+        toast({
+          duration: 700,
+          variant: "success",
+          title: "Success",
+          description: "Student removed successfully",
+        });
+        setStudents(students.filter((student) => student.id !== id));
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        duration: 700,
+        variant: "destructive",
+        title: "Failed to remove student",
+        description: "Please try again later",
+      });
+    }
   };
 
   const getStudents = useCallback(async () => {
-    console.log("helo");
     try {
       const result = await getStudentsByClass(user.class);
       if (result) {
@@ -59,12 +121,19 @@ export default function Classroom() {
       }
     } catch (error) {
       toast({
+        duration: 700,
+        variant: "destructive",
         title: "Failed to get students",
         description: "Please try again later",
       });
     }
   }, [user]);
-  console.log(user);
+
+  const handleModal = () => {
+    setIsModalOpen(!isModalOpen);
+    reset();
+  };
+
   useEffect(() => {
     if (user) {
       getStudents();
@@ -92,9 +161,9 @@ export default function Classroom() {
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search students" className="pl-8 w-64" />
         </div>
-        <Dialog>
+        <Dialog open={isModalOpen} onOpenChange={handleModal}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => setIsModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Add Student
             </Button>
           </DialogTrigger>
@@ -102,28 +171,37 @@ export default function Classroom() {
             <DialogHeader>
               <DialogTitle>Add New Student</DialogTitle>
             </DialogHeader>
-            <form onSubmit={addStudent} className="space-y-4">
+            <form onSubmit={handleSubmit(addStudent)} className="space-y-4">
               <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={newStudent.name}
-                  onChange={(e) =>
-                    setNewStudent({ ...newStudent, name: e.target.value })
-                  }
-                  required
-                />
+                <Label htmlFor="first_name">First Name</Label>
+                <Input {...register("first_name", { required: true })} />
+                {errors.first_name && (
+                  <span className="text-red-500">This field is required</span>
+                )}
               </div>
               <div>
-                <Label htmlFor="grade">Grade</Label>
+                <Label htmlFor="last_name">Last Name</Label>
+                <Input {...register("last_name", { required: true })} />
+                {errors.last_name && (
+                  <span className="text-red-500">This field is required</span>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="age">Email</Label>
                 <Input
-                  id="grade"
-                  value={newStudent.grade}
-                  onChange={(e) =>
-                    setNewStudent({ ...newStudent, grade: e.target.value })
-                  }
-                  required
+                  {...register("email", { required: true })}
+                  type="email"
                 />
+                {errors.email && (
+                  <span className="text-red-500">This field is required</span>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="age">Age</Label>
+                <Input {...register("age", { required: true })} />
+                {errors.age && (
+                  <span className="text-red-500">This field is required</span>
+                )}
               </div>
               <Button type="submit">Add Student</Button>
             </form>
@@ -135,7 +213,7 @@ export default function Classroom() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Grade</TableHead>
+              <TableHead>Class</TableHead>
               <TableHead>Attendance</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -143,8 +221,10 @@ export default function Classroom() {
           <TableBody>
             {students.map((student) => (
               <TableRow key={student.id}>
-                <TableCell>{student.first_name + student.last_name}</TableCell>
-                <TableCell>{student.grade}</TableCell>
+                <TableCell>
+                  {student.first_name + " " + student.last_name}
+                </TableCell>
+                <TableCell>{student.class_name}</TableCell>
                 <TableCell>{student.attendance}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
@@ -156,7 +236,10 @@ export default function Classroom() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>View Details</DropdownMenuItem>
                       <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="hover:!bg-red-400 hover:!text-white transition-all !duration-150">
+                      <DropdownMenuItem
+                        onClick={() => removeStudent(student.id)}
+                        className="hover:!bg-red-400 hover:!text-white transition-all !duration-150"
+                      >
                         Remove
                       </DropdownMenuItem>
                     </DropdownMenuContent>

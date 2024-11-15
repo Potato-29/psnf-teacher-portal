@@ -40,7 +40,7 @@ export default function Sidebar() {
             <h1 className="text-xl font-bold text-gray-800 dark:text-white">
               {user?.first_name} {user?.last_name}
             </h1>
-            <p>Class: {user?.class?.toUpperCase()}</p>
+            <p>Class: {user?.className?.toUpperCase()}</p>
           </CardContent>
         </Card>
       </div>

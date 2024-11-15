@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
-import axios from "@/config/axios";
 import supabase from "@/config/supabase-client";
 
 export const useAuth = () => {
@@ -21,18 +20,7 @@ export const useAuth = () => {
         const decoded = jwtDecode(token);
         const email = decoded.email;
 
-        // Fetch user info from your API
-        const { error, data } = await supabase
-          .from("teachers")
-          .select("*")
-          .eq("email", email)
-          .single();
-
-        if (error) {
-          throw new Error("Failed to fetch user data");
-        }
-
-        setUser(data);
+        setUser(decoded.user);
       } catch (err) {
         console.log(err);
         setError(err.message);

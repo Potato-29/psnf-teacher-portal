@@ -190,7 +190,7 @@ export function AttendanceTrackerComponent() {
       let studentsArr = [];
       result.map((item) => {
         studentsArr.push({
-          name: item.first_name + item.last_name,
+          name: item.first_name + " " + item.last_name,
           ...item,
         });
       });
